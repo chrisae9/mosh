@@ -626,10 +626,23 @@ static void OSC_8( const std::string& OSC_string, Framebuffer* fb )
 /* xterm uses an Operating System Command to set the window title */
 void Dispatcher::OSC_dispatch( const Parser::OSC_End* act __attribute( ( unused ) ), Framebuffer* fb )
 {
-  /* handle osc copy clipboard sequence 52;c; */
-  if ( OSC_string.size() >= 5 && OSC_string[0] == L'5' && OSC_string[1] == L'2' && OSC_string[2] == L';'
-       && OSC_string[3] == L'c' && OSC_string[4] == L';' ) {
-    Terminal::Framebuffer::title_type clipboard( OSC_string.begin() + 5, OSC_string.end() );
+  /*
+   * Handle OSC copy clipboard sequence 52;c; and variants. Note: While we
+   * accept other options (including those emitted by tmux), mosh currently
+   * does not preserve those options across the connection.
+   */
+  if ( OSC_string.size() >= 5 && OSC_string[0] == L'5' && OSC_string[1] == L'2' && OSC_string[2] == L';' ) {
+    /*
+     * Consider at most the first 64 bytes for options. Search backwards until
+     * we find a semicolon marking the end of options. This works since the
+     * clipboard contents are base64 encoded and cannot contain semicolons.
+     */
+    size_t clipboard_start = std::min<size_t>( 64, OSC_string.size() - 1 );
+    while ( clipboard_start >= 2 && OSC_string[clipboard_start] != L';' ) {
+      clipboard_start--;
+    }
+    clipboard_start++;
+    Terminal::Framebuffer::title_type clipboard( OSC_string.begin() + clipboard_start, OSC_string.end() );
     fb->set_clipboard( clipboard );
     /* handle osc terminal title sequence */
   } else if ( OSC_string.size() >= 1 ) {
