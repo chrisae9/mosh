@@ -57,7 +57,6 @@ static void clearline( Framebuffer* fb, int row, int start, int end )
 static void CSI_EL( Framebuffer* fb, Dispatcher* dispatch )
 {
   switch ( dispatch->getparam( 0, 0 ) ) {
-<<<<<<< HEAD
     case 0: /* default: active position to end of line, inclusive */
       clearline( fb, -1, fb->ds.get_cursor_col(), fb->ds.get_width() - 1 );
       break;
@@ -69,19 +68,6 @@ static void CSI_EL( Framebuffer* fb, Dispatcher* dispatch )
       break;
     default:
       break;
-=======
-  case 0: /* default: active position to end of line, inclusive */
-    clearline( fb, -1, fb->ds.get_cursor_col(), fb->ds.get_width() - 1 );
-    break;
-  case 1: /* start of screen to active position, inclusive */
-    clearline( fb, -1, 0, fb->ds.get_cursor_col() );
-    break;
-  case 2: /* all of line */
-    fb->reset_row( fb->get_mutable_row( -1 ) );
-    break;
-  default:
-    break;
->>>>>>> pr-1054
   }
 }
 
@@ -274,7 +260,6 @@ static void CSI_TBC( Framebuffer* fb, Dispatcher* dispatch )
 {
   int param = dispatch->getparam( 0, 0 );
   switch ( param ) {
-<<<<<<< HEAD
     case 0: /* clear this tab stop */
       fb->ds.clear_tab( fb->ds.get_cursor_col() );
       break;
@@ -286,19 +271,6 @@ static void CSI_TBC( Framebuffer* fb, Dispatcher* dispatch )
       break;
     default:
       break;
-=======
-  case 0: /* clear this tab stop */
-    fb->ds.clear_tab( fb->ds.get_cursor_col() );
-    break;
-  case 3: /* clear all tab stops */
-    fb->ds.clear_default_tabs();
-    for ( int x = 0; x < fb->ds.get_width(); x++ ) {
-      fb->ds.clear_tab( x );
-    }
-    break;
-  default:
-    break;
->>>>>>> pr-1054
   }
 }
 
